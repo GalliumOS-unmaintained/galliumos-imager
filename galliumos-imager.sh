@@ -1,18 +1,19 @@
 #!/bin/bash
 
+#Makes a GalliumOS Live cd that is installable
+#
 #Based on this tutorial: 
 #https://help.ubuntu.com/community/MakeALiveCD/DVD/BootableFlashFromHarddiskInstall
 
 #GPL2 License
 
-VERSION="1"
+VERSION="1.0.15"
 
 echo "
 ################################################
 ######                                    ######
 ######                                    ######
-###### GalliumOS       Imager $VERSION   ######
-######                                    ######
+###### GalliumOS    Imager $VERSION   ######
 ######                                    ######
 ######                                    ######
 ######                                    ######
@@ -78,6 +79,7 @@ echo "Making the necessary directories"
 mkdir -p "${CD}"/casper
 mkdir -p "${CD}"/boot/grub
 mkdir -p "${WORK}"/rootfs/dev/pts
+
 
 #Create devices in /dev
 echo "Creating some links and dirs in /dev"
@@ -264,22 +266,23 @@ mount -t sysfs sysfs "${WORK}"/rootfs/sys
 
 cp /etc/mtab "${WORK}"/rootfs/etc/mtab
 #Install essential tools
+FORCE_INSTALL='apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"'
 echo "Installing the essential tools"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 update"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 dist-upgrade"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xorriso squashfs-tools dmraid lvm2 samba-common"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL dist-upgrade"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xorriso squashfs-tools dmraid lvm2 samba-common ubuntu-standard galliumos-base galliumos-core galliumos-desktop"
 
 echo "Installing Ubiquity"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install casper lupin-casper"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install ubiquity-frontend-gtk"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install casper lupin-casper"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install ubiquity-frontend-gtk"
 
 echo "Installing kernel"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install linux-firmware-image-4.1.6-ck2-galliumos linux-headers-4.1.6-ck2-galliumos linux-image-4.1.6-ck2-galliumos"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-firmware-image-${KERNEL_VERSION} linux-headers-${KERNEL_VERSION} linux-image-${KERNEL_VERSION}"
 
 echo "Installing other stuff"
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim xfce4-mixer zram-config" 
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim xfce4-mixer zram-config chromium-browser" 
 
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support nicedaemon irqbalance ubuntu-release-upgrader-core ubuntu-sso-client"
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support nicedaemon irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
 
 echo "Installing base"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xf86-input-cmt"
