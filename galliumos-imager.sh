@@ -260,7 +260,7 @@ cd "${CURRENT_DIR}"
 echo "Mounting system file dirs"
 mount --bind /dev/ "${WORK}"/rootfs/dev
 mount --bind /dev/pts "${WORK}"/rootfs/dev/pts
-rsync -av /var/run/resolvconf "${WORK}"/rootfs/run
+#rsync -av /var/run/resolvconf "${WORK}"/rootfs/run
 mount -t proc proc "${WORK}"/rootfs/proc
 mount -t sysfs sysfs "${WORK}"/rootfs/sys
 
@@ -372,8 +372,8 @@ initrd /casper/initrd.img
 " > "${CD}"/boot/grub/grub.cfg
 
 echo "Creating the iso"
-DATE=`date +%s`
-grub-mkrescue -o "${WORK}"/galliumos-$1-$DATE.iso "${CD}"
+DATE=`date +%Y-%m-%d.%H.%M.%S`
+grub-mkrescue -d /usr/lib/grub/i386-pc/ -o /home/galliumos-builds/galliumos-$1-$DATE.iso "${CD}"
 
 echo "We are done."
 echo ""
