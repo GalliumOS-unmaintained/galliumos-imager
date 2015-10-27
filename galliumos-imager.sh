@@ -284,9 +284,13 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic 
 
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support nicedaemon irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
 
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge autoremove"
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 clean"
+
 echo "Installing base"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xf86-input-cmt"
 
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 if [ $BUILD == "haswell" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-broadwell"
@@ -359,6 +363,10 @@ echo "Creating grub.cfg"
 echo "
 set default=\"0\"
 set timeout=10
+insmod jpeg
+background_image -m stretch /boot/grub/galliumos.jpg
+set menu_color_normal=white/black
+set menu_color_highlight=black/white
 
 menuentry \"GalliumOS Live\" {
 linux /casper/vmlinuz boot=casper $KERNEL_PARAMS quiet splash --
@@ -370,6 +378,7 @@ linux /casper/vmlinuz boot=casper $KERNEL_PARAMS only-ubiquity quiet splash --
 initrd /casper/initrd.img
 }
 " > "${CD}"/boot/grub/grub.cfg
+cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg /boot/grub/galliumos.jpg
 
 echo "Creating the iso"
 DATE=`date +%Y-%m-%d.%H.%M.%S`
