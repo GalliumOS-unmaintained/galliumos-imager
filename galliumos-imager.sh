@@ -33,7 +33,7 @@ BUILD=$1
 
 if [ -z $1 ]
 then
-  echo "Build type wasn't specified. Current types: haswell, broadwell, c710"
+  echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, c710"
   exit 1
 fi
 
@@ -270,7 +270,8 @@ FORCE_INSTALL='apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Optio
 echo "Installing the essential tools"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 update"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL dist-upgrade"
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xorriso squashfs-tools dmraid lvm2 samba-common ubuntu-standard galliumos-base galliumos-core galliumos-desktop"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xorriso squashfs-tools dmraid lvm2 samba-common"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install galliumos-core galliumos-desktop grub-theme-starfield"
 
 echo "Installing Ubiquity"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install casper lupin-casper"
@@ -282,7 +283,7 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-firmware-imag
 echo "Installing other stuff"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim xfce4-mixer zram-config chromium-browser" 
 
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support nicedaemon irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
 
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge autoremove"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 clean"
@@ -290,22 +291,36 @@ chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 clean"
 echo "Installing base"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xf86-input-cmt"
 
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 if [ $BUILD == "haswell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
+elif [ $BUILD == "haswell-cbox" ]
+then
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
 elif [ $BUILD == "broadwell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-haswell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
+elif [ $BUILD == "broadwell-cbox" ]
+then
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
 elif [ $BUILD == "c710" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-haswell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install --purge galliumos-device-c710"
 fi
 
 if [ -n "$UBIQUITY_KERNEL_PARAMS" ]; then
@@ -362,11 +377,19 @@ echo "${RELEASE_NOTES_URL}" > "${CD}"/.disk/release_notes_url
 echo "Creating grub.cfg"
 echo "
 set default=\"0\"
-set timeout=10
+set timeout=5
+
+insmod gfxterm
+insmod vbe
 insmod jpeg
+terminal_output gfxterm
+loadfont /boot/grub/unicode.pf2
+
 background_image -m stretch /boot/grub/galliumos.jpg
+
 set menu_color_normal=white/black
 set menu_color_highlight=black/white
+set color_normal=white/black
 
 menuentry \"GalliumOS Live\" {
 linux /casper/vmlinuz boot=casper $KERNEL_PARAMS quiet splash --
@@ -378,7 +401,9 @@ linux /casper/vmlinuz boot=casper $KERNEL_PARAMS only-ubiquity quiet splash --
 initrd /casper/initrd.img
 }
 " > "${CD}"/boot/grub/grub.cfg
-cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg /boot/grub/galliumos.jpg
+rsync -av /boot/grub/i386-pc "${CD}"/boot/grub/
+rsync -av /boot/grub/unicode.pf2 "${CD}"/boot/grub/
+cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg "${CD}"/boot/grub/galliumos.jpg
 
 echo "Creating the iso"
 DATE=`date +%Y-%m-%d.%H.%M.%S`
