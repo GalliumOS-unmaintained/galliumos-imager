@@ -31,8 +31,6 @@ CURRENT_DIR=`pwd`
 #Build
 BUILD=$1
 
-OUT=$2
-
 if [ -z $1 ]
 then
   echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, c710"
@@ -409,7 +407,7 @@ cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg "${CD}"/boot
 
 echo "Creating the iso"
 DATE=`date +%Y-%m-%d.%H.%M.%S`
-grub-mkrescue -d /usr/lib/grub/i386-pc/ -o "${OUT}"/galliumos-$1-$DATE.iso "${CD}"
+grub-mkrescue -d /usr/lib/grub/i386-pc/ -o "$WORKSPACE/dist/galliumos-$1-$DATE.iso" "${CD}"
 
 echo "We are done."
 echo ""
