@@ -7,13 +7,13 @@
 
 #GPL2 License
 
-VERSION="1.0.15"
+VERSION="1.0.16"
 
 echo "
 ################################################
 ######                                    ######
 ######                                    ######
-###### GalliumOS    Imager $VERSION   ######
+###### GalliumOS    Imager $VERSION         ######
 ######                                    ######
 ######                                    ######
 ######                                    ######
@@ -50,8 +50,6 @@ unmount_filesystems() {
 
 #We depend on the umask being 022
 umask 022
-
-modprobe cpuid
 
 #Source the config file
 if [ -r "$CONFIG_FILE" ]; then
@@ -265,13 +263,17 @@ mount -t proc proc "${WORK}"/rootfs/proc
 mount -t sysfs sysfs "${WORK}"/rootfs/sys
 
 cp /etc/mtab "${WORK}"/rootfs/etc/mtab
-#Install essential tools
+
 FORCE_INSTALL='apt-get -q -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"'
-echo "Installing the essential tools"
+
+echo "Installing the essential tools on the build host"
+$FORCE_INSTALL install xorriso squashfs-tools
+
+echo "Upgrading packages and installing essential packages in the rootfs dir"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 update"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL dist-upgrade"
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xorriso squashfs-tools dmraid lvm2 samba-common"
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install galliumos-core galliumos-desktop grub-theme-starfield"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install dmraid lvm2 samba-common"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install galliumos-core galliumos-desktop"
 
 echo "Installing Ubiquity"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install casper lupin-casper"
@@ -293,10 +295,10 @@ chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xf86-input-cmt"
 
 if [ $BUILD == "haswell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 elif [ $BUILD == "haswell-cbox" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
@@ -305,10 +307,10 @@ then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
 elif [ $BUILD == "broadwell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 elif [ $BUILD == "broadwell-cbox" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
@@ -317,10 +319,10 @@ then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
 elif [ $BUILD == "c710" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install --purge galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 fi
 
 if [ -n "$UBIQUITY_KERNEL_PARAMS" ]; then
@@ -371,8 +373,9 @@ find "${CD}" -type f -print0 | xargs -0 md5sum | sed "s@${CD}@.@" | \
     grep -v md5sum.txt >> "${CD}"/md5sum.txt
 
 echo "Creating release notes url"
-mkdir "${CD}"/.disk
+mkdir "${CD}"/.disk > /dev/null 2>&1
 echo "${RELEASE_NOTES_URL}" > "${CD}"/.disk/release_notes_url
+echo "GalliumOS 15.04 \"Vivid Vervet\" - Release amd64 (20151030.1)" > "${CD}"/.disk/info
 
 echo "Creating grub.cfg"
 echo "
@@ -401,8 +404,8 @@ linux /casper/vmlinuz boot=casper $KERNEL_PARAMS only-ubiquity quiet splash --
 initrd /casper/initrd.img
 }
 " > "${CD}"/boot/grub/grub.cfg
-rsync -av /boot/grub/i386-pc "${CD}"/boot/grub/
-rsync -av /boot/grub/unicode.pf2 "${CD}"/boot/grub/
+rsync -a /boot/grub/i386-pc "${CD}"/boot/grub/
+rsync -a /boot/grub/unicode.pf2 "${CD}"/boot/grub/
 cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg "${CD}"/boot/grub/galliumos.jpg
 
 echo "Creating the iso"
