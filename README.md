@@ -1,4 +1,6 @@
 GalliumOS imager
+=====
+[![Build Status](https://ci.galliumos.org/job/GalliumOS-Nightlies/badge/icon)](https://ci.galliumos.org/job/GalliumOS-Nightlies/)
 
 This is a fork from distroshare imager for GalliumOS
 
