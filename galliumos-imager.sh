@@ -375,7 +375,7 @@ find "${CD}" -type f -print0 | xargs -0 md5sum | sed "s@${CD}@.@" | \
 echo "Creating release notes url"
 mkdir "${CD}"/.disk > /dev/null 2>&1
 echo "${RELEASE_NOTES_URL}" > "${CD}"/.disk/release_notes_url
-echo "GalliumOS 15.04 \"Vivid Vervet\" - Release amd64 (20151030.1)" > "${CD}"/.disk/info
+echo "GalliumOS 1.0beta1 \"Vivid Vervet\" - Release amd64 (20151109.1)" > "${CD}"/.disk/info
 
 echo "Creating grub.cfg"
 echo "
