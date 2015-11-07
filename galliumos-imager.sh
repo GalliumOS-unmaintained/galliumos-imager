@@ -33,7 +33,7 @@ BUILD=$1
 
 if [ -z $1 ]
 then
-  echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, c710"
+  echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, sandy"
   exit 1
 fi
 
@@ -317,7 +317,7 @@ then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
-elif [ $BUILD == "c710" ]
+elif [ $BUILD == "sandy" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
@@ -409,9 +409,9 @@ rsync -a /boot/grub/unicode.pf2 "${CD}"/boot/grub/
 cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg "${CD}"/boot/grub/galliumos.jpg
 
 echo "Creating the iso"
-DATE=`date +%Y-%m-%d.%H.%M.%S`
-echo "ISO: $2/dist/galliumos-$1-$DATE.iso"
-grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $2/dist/galliumos-$1-$DATE.iso "${CD}"
+DATE=`date +%Y%m%d`
+echo "ISO: $2/dist/galliumos-$DATE-$1.iso"
+grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $2/dist/galliumos-$DATE-$1.iso "${CD}"
 
 echo "We are done."
 echo ""
