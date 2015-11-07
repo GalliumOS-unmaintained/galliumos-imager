@@ -411,7 +411,7 @@ cp "${WORK}"/rootfs/usr/share/xfce4/backdrops/galliumos-default.jpg "${CD}"/boot
 echo "Creating the iso"
 DATE=`date +%Y%m%d`
 echo "ISO: $2/dist/galliumos-$DATE-$1.iso"
-grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $2/dist/galliumos-$DATE-$1.iso "${CD}"
+grub-mkrescue -d /usr/lib/grub/i386-pc/ -o $2/dist/galliumos-1.0a-$DATE-NIGHTLY-$1.iso "${CD}"
 
 echo "We are done."
 echo ""
