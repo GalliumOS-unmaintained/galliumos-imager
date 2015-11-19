@@ -353,7 +353,7 @@ echo "Creating filesystem.manifest"
 chroot "${WORK}"/rootfs dpkg-query -W --showformat='${Package} ${Version}\n' > "${CASPER}"/filesystem.manifest
 
 cp "${CASPER}"/filesystem.manifest "${CASPER}"/filesystem.manifest-desktop
-REMOVE='ubiquity apt-clone archdetect-deb dpkg-repack gir1.2-javascriptcoregtk-3.0 gir1.2-json-1.0 gir1.2-timezonemap-1.0 gir1.2-webkit-3.0 libdebian-installer4 libtimezonemap-data libtimezonemap1 python3-icu python3-pam rdate sbsigntool ubiquity-casper ubiquity-ubuntu-artwork ubuntu-drivers-common ubiquity-frontend-gtk xubuntu-live-settings casper' 
+REMOVE='ubiquity apt-clone archdetect-deb dpkg-repack gir1.2-javascriptcoregtk-3.0 gir1.2-json-1.0 gir1.2-timezonemap-1.0 gir1.2-webkit-3.0 libdebian-installer4 libtimezonemap-data libtimezonemap1 python3-icu python3-pam rdate sbsigntool ubiquity-casper ubiquity-ubuntu-artwork ubuntu-drivers-common ubiquity-frontend-gtk xubuntu-live-settings casper user-setup os-prober'
 for i in $REMOVE
 do
    sed -i "/${i}/d" "${CASPER}"/filesystem.manifest-desktop
