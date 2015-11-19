@@ -288,7 +288,7 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-firmware-imag
 echo "Installing other stuff"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim zram-config chromium-browser" 
 
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox transmission-common transmission-gtk"
 
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge autoremove"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 clean"
