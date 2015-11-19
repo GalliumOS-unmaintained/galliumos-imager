@@ -286,7 +286,7 @@ echo "Installing kernel"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-firmware-image-${KERNEL_VERSION} linux-headers-${KERNEL_VERSION} linux-image-${KERNEL_VERSION}"
 
 echo "Installing other stuff"
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim xfce4-mixer zram-config chromium-browser" 
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim zram-config chromium-browser" 
 
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox"
 
@@ -353,7 +353,7 @@ echo "Creating filesystem.manifest"
 chroot "${WORK}"/rootfs dpkg-query -W --showformat='${Package} ${Version}\n' > "${CASPER}"/filesystem.manifest
 
 cp "${CASPER}"/filesystem.manifest "${CASPER}"/filesystem.manifest-desktop
-REMOVE='ubiquity ubiquity-frontend-gtk lupin-casper ubiquity-casper casper user-setup os-prober libdebian-installer4 apt-clone archdetect-deb dpkg-repack gir1.2-json-1.0 gir1.2-timezonemap-1.0 gir1.2-xkl-1.0 libparted-fs-resize0 libtimezonemap-data libtimezonemap1 python3-icu python3-pam rdate sbsigntool ubiquity-ubuntu-artwork localechooser-data cifs-utils gir1.2-appindicator3-0.1 gir1.2-javascriptcoregtk-3.0 gir1.2-vte-2.90 gir1.2-webkit-3.0 xubuntu-live-settings' 
+REMOVE='ubiquity apt-clone archdetect-deb dpkg-repack gir1.2-javascriptcoregtk-3.0 gir1.2-json-1.0 gir1.2-timezonemap-1.0 gir1.2-webkit-3.0 libdebian-installer4 libtimezonemap-data libtimezonemap1 python3-icu python3-pam rdate sbsigntool ubiquity-casper ubiquity-ubuntu-artwork ubuntu-drivers-common ubiquity-frontend-gtk xubuntu-live-settings' 
 for i in $REMOVE
 do
    sed -i "/${i}/d" "${CASPER}"/filesystem.manifest-desktop
