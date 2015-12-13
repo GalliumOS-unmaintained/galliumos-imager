@@ -33,7 +33,7 @@ BUILD=$1
 
 if [ -z $1 ]
 then
-  echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, sandy"
+  echo "Build type wasn't specified. Current types: haswell, haswell-cbox, broadwell, broadwell-cbox, sandy, baytrail"
   exit 1
 fi
 
@@ -283,7 +283,7 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install casper lupin-casper
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install ubiquity-frontend-gtk"
 
 echo "Installing kernel"
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-firmware-image-${KERNEL_VERSION} linux-headers-${KERNEL_VERSION} linux-image-${KERNEL_VERSION}"
+chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-image-galliumos"
 
 echo "Installing other stuff"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic slim zram-config chromium-browser" 
@@ -298,33 +298,27 @@ chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install xf86-input-cmt"
 
 if [ $BUILD == "haswell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 elif [ $BUILD == "haswell-cbox" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-haswell"
+elif [ $BUILD == "baytrail" ]
+then
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-baytrail"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 elif [ $BUILD == "broadwell" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 elif [ $BUILD == "broadwell-cbox" ]
 then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-laptop"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-device-c710"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-broadwell"
 elif [ $BUILD == "sandy" ]
 then
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-haswell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-broadwell"
-  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-device-c710"
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-sandy"
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 fi
 
