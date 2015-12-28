@@ -275,9 +275,6 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL dist-upgrade"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install dmraid lvm2 samba-common"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install galliumos-core galliumos-desktop"
 
-#Install development repo
-chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install galliumos-base-testing"
-
 echo "Installing Ubiquity"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install casper lupin-casper"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install ubiquity-frontend-gtk"
