@@ -285,10 +285,12 @@ chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install ubiquity-frontend-g
 echo "Installing kernel"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install linux-image-galliumos"
 
+echo "Removing stuff"
+chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox transmission-common transmission-gtk slim"
+
 echo "Installing other stuff"
 chroot "${WORK}"/rootfs /bin/bash -c "$FORCE_INSTALL install xbindkeys synaptic intel-microcode iucode-tool i965-va-driver libva-intel-vaapi-driver vainfo compton fonts-croscore synaptic lxdm xscreensaver zram-config chromium-browser" 
 
-chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge remove xserver-xorg-input-synaptics acpid acpi-support irqbalance ubuntu-release-upgrader-core ubuntu-sso-client colord gnome-sudoku gnome-mines firefox transmission-common transmission-gtk slim"
 
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 --purge autoremove"
 chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 clean"
