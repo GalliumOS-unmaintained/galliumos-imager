@@ -321,6 +321,15 @@ then
   chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-laptop"
 fi
 
+for i in sandy broadwell baytrail haswell
+do
+    BASE_BUILD=`echo $BUILD | sed -e 's/-cbox//'`
+    if [ "$BASE_BUILD" != "$i" ]
+    then 
+	chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-${i}"
+    fi
+done
+
 if [ -n "$UBIQUITY_KERNEL_PARAMS" ]; then
   echo "Replacing ubiquity default extra kernel params with: $UBIQUITY_KERNEL_PARAMS"
   sed -i "s/defopt_params=\"\"/defopt_params=\"${UBIQUITY_KERNEL_PARAMS}\"/" \
@@ -390,13 +399,8 @@ set menu_color_normal=white/black
 set menu_color_highlight=black/white
 set color_normal=white/black
 
-menuentry \"GalliumOS Live\" {
+menuentry \"GalliumOS Live and Install\" {
 linux /casper/vmlinuz boot=casper $KERNEL_PARAMS quiet splash --
-initrd /casper/initrd.img
-}
-
-menuentry \"GalliumOS Install Only\" {
-linux /casper/vmlinuz boot=casper $KERNEL_PARAMS only-ubiquity quiet splash --
 initrd /casper/initrd.img
 }
 " > "${CD}"/boot/grub/grub.cfg
