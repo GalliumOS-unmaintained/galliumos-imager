@@ -330,6 +330,13 @@ do
     fi
 done
 
+if [[ $BUILD == *"-cbox"* ]]
+then
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 install galliumos-cbox"
+else
+  chroot "${WORK}"/rootfs /bin/bash -c "apt-get -q=2 remove --purge galliumos-cbox"
+fi
+
 if [ -n "$UBIQUITY_KERNEL_PARAMS" ]; then
   echo "Replacing ubiquity default extra kernel params with: $UBIQUITY_KERNEL_PARAMS"
   sed -i "s/defopt_params=\"\"/defopt_params=\"${UBIQUITY_KERNEL_PARAMS}\"/" \
